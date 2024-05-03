@@ -1,0 +1,43 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL_UNPOOLED")
+}
+
+model Product {
+  id        Int        @id @default(autoincrement())
+  createdAt DateTime   @default(now())
+  updatedAt DateTime   @updatedAt
+  title     String     @db.VarChar(255)
+  image     String
+  price     Float
+  qty       Int
+
+  orderItems OrderItem[]
+}
+
+model Order {
+  id         Int        @id @default(autoincrement())
+  createdAt  DateTime   @default(now())
+  updatedAt  DateTime   @updatedAt
+  orderItems OrderItem[]
+}
+
+model OrderItem {
+  id         Int      @id @default(autoincrement())
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+  numberTable Int
+  prodTitle   String  @db.VarChar(255)
+  prodPrice   Float
+  status      String  @db.VarChar(255) @default("PENDING") 
+  qty         Int?
+
+  productId Int
+  product   Product @relation(fields: [productId], references: [id])
+  orderId   Int?
+  order     Order?  @relation(fields: [orderId], references: [id])
+}
